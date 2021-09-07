@@ -6,7 +6,7 @@ main :: IO()
 main = animationOf $ drawLinePoints (-5) 7  5 (-7)
 
 drawLinePoints:: Int -> Int -> Int -> Int -> Double -> Picture
-drawinePoints ax ay bx by seconds = coordinatePlane 
+drawLinePoints ax ay bx by seconds = coordinatePlane 
                    & polyline([(fromIntegral ax, fromIntegral ay),
                                (fromIntegral bx, fromIntegral by)])
                    & foldl1 (&) (take (round seconds+1) points)
