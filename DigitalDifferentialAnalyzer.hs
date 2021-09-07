@@ -3,10 +3,10 @@ import Data.List
 import Data.Text(pack, unpack)
 
 main :: IO()
-main = animationOf $ getLinePoints (-5) 7  5 (-7)
+main = animationOf $ drawLinePoints (-5) 7  5 (-7)
 
-getLinePoints:: Int -> Int -> Int -> Int -> Double -> Picture
-getLinePoints ax ay bx by seconds = coordinatePlane 
+drawLinePoints:: Int -> Int -> Int -> Int -> Double -> Picture
+drawinePoints ax ay bx by seconds = coordinatePlane 
                    & polyline([(fromIntegral ax, fromIntegral ay),
                                (fromIntegral bx, fromIntegral by)])
                    & foldl1 (&) (take (round seconds+1) points)
