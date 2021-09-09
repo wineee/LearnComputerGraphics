@@ -3,23 +3,19 @@
 对于直线上方的点, 那么 Ax + By + C > 0
 对于直线下方的点, 那么 Ax + By + C < 0
 将中点带入直线方程即可得知应取左上还是右下的点
-
 过 (x0,y0), (x1,y1)
     A = y0 - y1;
 	B = x1 - x0;
     C = y1x0-x1y0
-
 let d(x,y) = Ax + By + C
 we get:
     d0 = d(x0, y0+0.5) = 0.5B
     det0 = d(x+1, y) - d(x, y) = A 
     det1 = d(x+1, y+1) - d(x,y) = A+B 
-
 为了避免小数，这里取2倍,不影响正负
     d0' = B
     det0' = 2A
     det1' = 2A+2B
-
 -}
 import CodeWorld
 import Data.List
@@ -41,7 +37,7 @@ midPointDrawLine x0 y0 x1 y1
   | x0 == x1 && y0 == y1 = [styledLettering Bold Handwriting 
                                   (pack "Not a Line")]
   | x0 > x1 = midPointDrawLine x1 y1 x0 y0                             
-  | abs a <= abs b = zipWith drawDotWithMid [x0 .. x1] 
+  | abs a <= abs b = zipWith drawDotWithMid' [x0 .. x1] 
                        -- unfoldr :: (b -> Maybe (a, b)) -> b -> [a]
                        $ unfoldr (\val@(x,y,d',isUp) -> if x <= x1 
                               then Just(
@@ -58,9 +54,10 @@ midPointDrawLine x0 y0 x1 y1
         d1 = b + det0
         det0 = a + a
         det1 = a + a + b + b
+        drawDotWithMid' x (y,isUp)= drawDotWithMid x y isUp
 
-drawDotWithMid :: Int -> (Int,Bool) -> Picture
-drawDotWithMid x (y,isUp) = translated (fromIntegral x) (fromIntegral y)
+drawDotWithMid :: Int -> Int -> Bool -> Picture
+drawDotWithMid x y isUp = translated (fromIntegral x) (fromIntegral y)
               $ colored green 
               $ solidCircle 0.3
               & translated 0 (if isUp then 0.5 else (-0.5)) midline
