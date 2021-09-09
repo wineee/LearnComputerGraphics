@@ -37,9 +37,14 @@ drawLineCircle :: Int -> Double -> Picture
 drawLineCircle r seconds =
   coordinatePlane
     & circle (fromIntegral r)
-    & foldl1 (&) (take (round seconds + 1) points)
+    & selfAndMirror (pi/2) black 
+      . selfAndMirror 0 blue 
+      . selfAndMirror (pi/4) red  
+      $ foldl1 (&) (take (round seconds + 1) points)
   where
     points = midPointDrawCircle r
+    selfAndMirror angle color pic  = pic & (colored color (reflected angle pic))
+
 
 midPointDrawCircle :: Int -> [Picture]
 midPointDrawCircle r
@@ -55,15 +60,10 @@ midPointDrawCircle r
                                 if d' < 0 then y else y - 1,
                                 if d' < 0 then d' + det0 else d' + det1
                             ))
-                (x0, y0, d0)
-  where
-    x0 = 0
-    y0 = r
-    d0 = 1 - r -- 1.25
+                (0, r, 1 - r) -- 1.25-r 除1.25外，所有操作为整数，所以0.25可以去掉
 
 drawDot :: Int -> Int -> Picture
 drawDot x y =
   translated (fromIntegral x) (fromIntegral y) $
     colored green $
       solidCircle 0.3
-
