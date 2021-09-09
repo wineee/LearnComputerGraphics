@@ -17,3 +17,6 @@ Thank for SimpleScreenRecorder!
 
 <img src="https://cdn.jsdelivr.net/gh/wineee/MarkDownPIC@master/img/241cb4ef38feec8c812c9594d1e854b3.gif" width="400px">
 
+## Unlicense
+
+This is free and unencumbered software released into the public domain.
