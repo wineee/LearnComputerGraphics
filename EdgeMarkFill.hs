@@ -3,22 +3,31 @@ import Data.List
 import Data.Text(pack, unpack)
 
 main :: IO()
-main = animationOf $ drawLinePoints (-5) 7  5 (-7)
+main = animationOf $ drawPolys [[(-1,-2), (2,3), (4,-5),(-1,-2)]]
 
-drawLinePoints:: Int -> Int -> Int -> Int -> Double -> Picture
-drawLinePoints ax ay bx by seconds =  
-                   polyline([(fromIntegral ax, fromIntegral ay),
-                               (fromIntegral bx, fromIntegral by)])
-                   & (foldl (&)  blank 
-                   (map drawDot (take ((floor (seconds*0.5)) + 1) points)))
-                   where 
-                     points = ddaDrawLine ax ay bx by
+drawPolys:: [[(Int, Int)]] -> Double -> Picture
+drawPolys poly seconds = 
+                   coordinatePlane 
+                   & drawAllPoly poly
+                   --polyline()
+                   --(map drawDot (take ((floor (seconds*0.5)) + 1) points)))
+                   --where 
+                     --points = ddaDrawLine ax ay bx by
 
 --edgemark_fill::
-
+drawAllPoly:: [[(Int, Int)]] -> Picture
+drawAllPoly [] = blank
+drawAllPoly (x:xs) = foldl (&) blank (map drawDot $ drawPoly x) 
+                     & polygon (map toPoint x)
+                     & drawAllPoly xs
+                     where
+                     toPoint (x,y) = (fromIntegral x::Double, fromIntegral y::Double)
+                   
+                     
 drawPoly:: [(Int, Int)] -> [(Int, Int)]
 drawPoly [] = []
-drawPoly (a@(ax, ay) : b@(bx,by) : xs) = ddaDrawLine ax ay bx by ++ drawPoly xs  
+drawPoly [x] = []
+drawPoly (a@(ax, ay) : b@(bx,by) : xs) = ddaDrawLine ax ay bx by ++ drawPoly (b:xs)  
 
 
 ddaDrawLine:: Int -> Int -> Int -> Int -> [(Int, Int)]
