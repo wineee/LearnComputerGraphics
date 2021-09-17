@@ -66,7 +66,7 @@ insertE y edge (net@(posY,eds):nets) = if y == posY
 
 -- 扫描线法主过程
 ploy_fill:: Int -> NET -> AET -> [PointI]
-ploy_fill y net aet = getYvalAet y aet 
+ploy_fill y net aet = zip (dotToLine $ sort $ map fst $ getYvalAet y aet) (repeat y) 
                       ++ if y == gYMax then [] else
                       ploy_fill (y+1)
                                 (tail net) --(filter (\(y',e) -> y'/= y+1) net) -- 删去过时的新边表
@@ -76,7 +76,15 @@ ploy_fill y net aet = getYvalAet y aet
                             getNext y [] = []
                             getNext y (aet@(EdgeI x dx yM):aets)
                               | y == yM = getNext y aets -- 删去Ymax>y+1的活动边
-                              | otherwise = aet { x = x+dx } : getNext y aets
+                              | otherwise = aet { x = x+dx } : getNext y aets -- 更新 x 坐标
+
+dotToLine:: [Int] -> [Int]
+dotToLine dots = dotToLine' ([gXMax-1] ++ dots ++ [gXMax+1]) False
+
+dotToLine':: [Int] -> Bool -> [Int]
+dotToLine' [] st = []
+dotToLine' [x] st = []
+dotToLine' (a:b:xs) st = (if st then [a .. b] else []) ++ dotToLine' (b:xs) (not st)
 
 -- 跟据y值和活性边表，求当前扫描线的所有交
 getYvalAet:: Int -> AET -> [PointI]
