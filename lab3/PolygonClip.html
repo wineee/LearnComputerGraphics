@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cohen_Sutherland</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+
+<body>
+    <h3>直线段裁剪 Cohen_Sutherland算法</h3>
+
+    <p>依次输入裁剪矩形的左，右，下，上边界:</p>
+    <small>取值范围 0 ~ 700</small>
+    <br>
+    <input type="number" id="xLeft" value="40">
+    <input type="number" id="xRight" value="400">
+    <input type="number" id="yButton" value="120">
+    <input type="number" id="yTop" value="200">
+
+    <p>输入待裁剪多边形：</p>
+    <input type="text" id="points" size="90" value="[[100, 100], [20,400], [100, 300], [300, 300], [300, 100], [100, 100]]">
+
+    <br> <br>
+    <button type="button" onclick="update()">点击更新数据</button>
+
+    <br> <br>
+    <div id="viewarea"></div>
+    <script>
+
+        svg = d3.select("#viewarea")
+            .append("svg")
+            .attr("width", 700)
+            .attr("height", 700)
+            .attr("style", "border:1px solid red;")
+
+        var yB, yT, xL, xR;
+        var points = [];
+        var new_points = [];
+
+        function update() {
+            svg.select("rect").remove();
+            svg.selectAll("polygon").remove();
+            xL = Number(document.getElementById("xLeft").value);
+            xR = Number(document.getElementById("xRight").value);
+            yB = Number(document.getElementById("yButton").value);
+            yT = Number(document.getElementById("yTop").value);
+            svg.append("rect")
+                .attr("x", xL)
+                .attr("y", yB)
+                .attr("width", xR - xL)
+                .attr("height", yT - yB)
+                .attr("fill", "none")
+                .attr("stroke", "black")
+                .attr("stroke-width", "1px");
+
+            points = eval(document.getElementById("points").value);
+            svg.append("polygon")
+                .attr("points", points)
+                .attr("fill", "none")
+                .attr("stroke", "red")
+                .attr("stroke-width", "1px");
+
+            PolyClip();
+          
+            svg.append("polygon")
+                .attr("points", points)
+                .attr("fill", "none")
+                .attr("stroke", "green")
+                .attr("stroke-width", "2px");
+
+        }
+        update();
+
+        var sX, sY, pX, pY;
+
+        // 求 SP 与剪裁线交点
+        // type 1..4 yB yT xL xR
+        function CrossPot(type) {
+            k = (pY - sY) / (pX - sX);
+            if (type == 1) { // Button
+                if (sY >= yB && pY >= yB) return null;
+                if (sY <= yB && pY <= yB) return null;
+                return [sX + (yB - sY) / k, yB];
+            }
+            if (type == 2) { // Top
+                if (sY >= yT && pY >= yT) return null;
+                if (sY <= yT && pY <= yT) return null;
+                return [sX + (yT - sY) / k, yT];
+            }
+            if (type == 3) { // Left
+                if (sX >= xL && pX >= xL) return null;
+                if (sX <= xL && pX <= xL) return null;
+                return [xL, sY + k * (xL - sX)];
+            }
+            if (type == 4) { // Right
+                if (sX >= xR && pX >= xR) return null;
+                if (sX <= xR && pX <= xR) return null;
+                return [xR, sY + k * (xR - sX)];
+            }
+            return null;
+        }
+
+        function pIn(type) {
+            switch (type) {
+                case 1: return pY >= yB;
+                case 2: return pY <= yT;
+                case 3: return pX >= xL;
+                case 4: return pX <= xR;
+            }
+        }
+
+        function PolyClip() {
+            new_points = [];
+            // 枚举 4 个剪裁线
+            for (let cut_line = 1; cut_line <= 4; cut_line++) {
+
+                for (let i = 1; i < points.length; i++) {
+                    sX = points[i - 1][0];
+                    sY = points[i - 1][1];
+                    pX = points[i][0];
+                    pY = points[i][1];
+                    let c = CrossPot(cut_line);
+                    // 求 SP 与剪裁线交点
+                    if (c != null) {
+                        new_points.push(c);
+                        console.log([sX,sY],[pX,pY],"c", c);
+                    }
+                    if (pIn(cut_line)) { // 如果 p 在可见一侧
+                        new_points.push([pX, pY]);
+                        console.log("P", [pX, pY]);
+                    }
+
+                }
+                console.log("NN", new_points);
+                if (new_points.length == 0)
+                    return;
+                new_points.push(new_points[0]);
+                console.log(new_points);
+
+                points = new_points.slice();
+                new_points = []
+            }
+
+        }
+
+    </script>
+
+</body>
+
+</html>

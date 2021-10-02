@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cohen_Sutherland</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+
+<body>
+    <h3>直线段裁剪 Cohen_Sutherland算法</h3>
+
+    <p>依次输入裁剪矩形的左，右，下，上边界:</p>
+    <small>取值范围 0 ~ 700</small>
+    <br>
+    <input type="number" id="xLeft" value="40">
+    <input type="number" id="xRight" value="500">
+    <input type="number" id="yButton" value="90">
+    <input type="number" id="yTop" value="200">
+
+    <p>依次输入直线信息：x1, y1, x2, y2:</p>
+    <input type="number" id="x1" value="20">
+    <input type="number" id="y1" value="50">
+    <input type="number" id="x2" value="400">
+    <input type="number" id="y2" value="510">
+
+    <br> <br>
+    <button type="button" onclick="update()">点击更新数据</button>
+
+    <br> <br>
+    <div id="viewarea"></div>
+    <script>
+
+        svg = d3.select("#viewarea")
+            .append("svg")
+            .attr("width", 700)
+            .attr("height", 700)
+            .attr("style", "border:1px solid red;")
+
+        var yB = 90, yT = 200, xL = 40, xR = 500;
+
+        function update() {
+            svg.select("rect").remove();
+            svg.selectAll("line").remove();
+            xL = Number(document.getElementById("xLeft").value);
+            xR = Number(document.getElementById("xRight").value);
+            yB = Number(document.getElementById("yButton").value);
+            yT = Number(document.getElementById("yTop").value);
+            svg.append("rect")
+                .attr("x", xL)
+                .attr("y", yB)
+                .attr("width", xR - xL)
+                .attr("height", yT - yB)
+                .attr("fill", "none")
+                .attr("stroke", "black")
+                .attr("stroke-width", "1px");
+
+            let x1 = Number(document.getElementById("x1").value);
+            let y1 = Number(document.getElementById("y1").value);
+            let x2 = Number(document.getElementById("x2").value);
+            let y2 = Number(document.getElementById("y2").value);
+            svg.append("line")
+                .attr("x1", x1)
+                .attr("y1", y1)
+                .attr("x2", x2)
+                .attr("y2", y2)
+                .attr("stroke", "black")
+                .attr("stroke-width", "1px");
+
+            nLine = Cohen_Sutherland(x1, y1, x2, y2);
+            if (nLine == null)
+                return;
+            svg.append("line")
+                .attr("x1", nLine[0])
+                .attr("y1", nLine[1])
+                .attr("x2", nLine[2])
+                .attr("y2", nLine[3])
+                .attr("stroke", "red")
+                .attr("stroke-width", "2px");
+        }
+        update();
+        
+        function encode(x, y) {
+            return (x < xL)
+                | (x > xR) << 1
+                | (y < yB) << 2
+                | (y > yT) << 3;
+        }
+
+        function Cohen_Sutherland(x1, y1, x2, y2) {
+            code1 = encode(x1, y1);
+            code2 = encode(x2, y2);
+
+            while (code1 != 0 || code2 != 0) {
+                if (code1 & code2) // 在外部
+                    return null;
+                code = code1 ? code1 : code2;
+                k = (y2 - y1) / (x2 - x1);
+                // 当 x1=x2 时，肯定是 Top 或者 Button 的情况， 0/Infinity=0, 不用特判
+                if (code & 1) { // Left
+                    x = xL;
+                    y = y1 + k * (xL - x1);
+                }
+                else if (code & 2) { // Right
+                    x = xR
+                    y = y1 + k * (xR - x1);
+                }
+                else if (code & 4) { // Button
+                    y = yB;
+                    x = x1 + (yB - y1) / k;
+                    console.log(x,k)
+                }
+                else if (code & 8) { // Top
+                    y = yT;
+                    x = x1 + (yT - y1) / k;
+                }
+                if (code == code1) {
+                    x1 = x;
+                    y1 = y;
+                    code1 = encode(x, y);
+                } else {
+                    x2 = x;
+                    y2 = y;
+                    code2 = encode(x, y);
+                }
+            }
+            return [x1, y1, x2, y2]
+        }
+    </script>
+
+</body>
+
+</html>
