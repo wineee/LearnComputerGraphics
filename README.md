@@ -19,6 +19,19 @@ Thank for SimpleScreenRecorder!
 
 <img src="https://cdn.jsdelivr.net/gh/wineee/MarkDownPIC@master/img/79cf5572e62be35ace89b7ea4e681fe5.gif" width="400px">
 
+### 2 Polygon Scan Conversion
+
+<img src="https://cdn.jsdelivr.net/gh/wineee/MarkDownPIC@master/img/dbe31e5d5430d8109f333674e9c7bd2a.gif" width="400px">
+
+### 3 MidpointSplit/Cohen_Sutherland/梁友栋-Barsky
+（d3.js）
+
+![wishimg](https://cdn.jsdelivr.net/gh/wineee/MarkDownPIC@master/img/b4227f80fac331f393dede92e7d650af.png)
+
+### 3.2 PolygonClip
+
+![wishimg](https://cdn.jsdelivr.net/gh/wineee/MarkDownPIC@master/img/a5db7f9b9795122b48b0845239754fd4.png)
+
 ### 4 Bezier Curve
 （python/pyqt）
 
